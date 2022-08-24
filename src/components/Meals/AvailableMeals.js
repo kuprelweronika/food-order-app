@@ -1,5 +1,6 @@
 import classes from "./AvailableMeals.module.css";
 import Card from "../UI/Card";
+import MealItem from "./MealItem";
 
 const DUMMY_MEALS = [
   {
@@ -30,7 +31,16 @@ const DUMMY_MEALS = [
 
 const AvailableMeals = () => {
   // mapujemy elementy z naszego obiektu, i wkładamy je w element li
-  const mealsList = DUMMY_MEALS.map((meal) => <li>{meal.name}</li>);
+  //const mealsList = DUMMY_MEALS.map((meal) => <li>{meal.name}</li>);
+  //teraz zamiast listować to to dajemy to do nowego komponentu
+  const mealsList = DUMMY_MEALS.map((meal) => (
+    <MealItem
+      key={meal.id}
+      name={meal.name}
+      description={meal.description}
+      price={meal.price}
+    />
+  ));
   return (
     <section className={classes.meals}>
       <Card>
