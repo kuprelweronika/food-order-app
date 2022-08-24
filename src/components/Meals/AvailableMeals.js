@@ -33,6 +33,7 @@ const AvailableMeals = () => {
   // mapujemy elementy z naszego obiektu, i wkładamy je w element li
   //const mealsList = DUMMY_MEALS.map((meal) => <li>{meal.name}</li>);
   //teraz zamiast listować to to dajemy to do nowego komponentu
+  //i podajemy odpowiednie wartosci do tego komponentu
   const mealsList = DUMMY_MEALS.map((meal) => (
     <MealItem
       key={meal.id}
