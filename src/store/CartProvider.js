@@ -9,7 +9,37 @@ const defaultCartState = {
 const cartReducer = (state, action) => {
   if (action.type === "ADD_ITEM") {
     //concat- dodajemy nowy item do array i pozostawiamy pozostałe
-    const updatedItems = state.items.concat(action.item);
+
+    //elementy nie kumuluja się w koszyku, tylko wszystko wyswietla sie osobno
+    //wiec chcemy zrobic zeby sie kumulowaly
+    //tworzymy stała index, która znajduje index itemu w arrayu
+    //findIndex bierze funkcje, ktora dla danego itemu zwroci true
+    //jesli znajdzie index i false otherwise
+    //zwroci true jestli item.id==action.item.id
+    //to finalnie zwróci index elementu ktory juz istnieje
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.item.id
+    );
+    //wyciagam ten element po indexie
+    const existingCartItem = state.items[existingCartItemIndex];
+
+    let updatedItems;
+
+    if (existingCartItem) {
+      const updatedItem = {
+        //kopiujemy poprzednie dane z koszyka
+        ...existingCartItem,
+        //zmieniamy amount
+        amount: existingCartItem.amount + action.item.amount,
+      };
+      updatedItems = [...state.items];
+      updatedItems[existingCartItemIndex] = updatedItem;
+    }
+    //else kiedy nie ma tego w koszyku
+    else {
+      updatedItems = state.items.concat(action.item);
+    }
+
     const updatedTotalAmount =
       state.totalAmount + action.item.price * action.item.amount;
     return {

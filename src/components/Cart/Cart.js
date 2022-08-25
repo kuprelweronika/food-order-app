@@ -1,27 +1,50 @@
+import { useContext } from "react";
 import classes from "./Cart.module.css";
 import Modal from "../UI/Modal";
+import CartContext from "../../store/cart-context";
+import CartItem from "./CartItem";
 
 const Cart = (props) => {
+  const cartCtx = useContext(CartContext);
+  const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
+
+  //do sprawdzania czy coś jest w koszyku
+  //bo przycisk zamów ma się pojawiaać dopiero jak coś jst w koszyku
+  const hasItems = cartCtx.items.length > 0;
+
+  const cartItemRemoveHandler = (id) => {};
+
+  const cartItemAddHandler = (item) => {};
+
   const cartItems = (
     <ul className={classes["cart-items"]}>
-      {[{ id: "c1", name: "sushu", amount: 2, price: 12.9 }].map((item) => (
-        <li>{item.name}</li>
+      {cartCtx.items.map((item) => (
+        <CartItem
+          key={item.id}
+          name={item.name}
+          amount={item.amount}
+          price={item.price}
+          onRemove={cartItemRemoveHandler.bind(null, item.id)}
+          onAdd={cartItemAddHandler.bind(null, item)}
+        />
       ))}
     </ul>
   );
+  //dodajemy .bind(null, item.id) to robi pre-konfiguracje
+  //dodalismy dodatkwy CartItem i zamiast tej listy renderujemy ten carditem
 
   return (
     <Modal onClose={props.onClose}>
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
-        <span>35.64</span>
+        <span>{totalAmount}</span>
       </div>
       <div className={classes.actions}>
         <button className={classes["button--alt"]} onClick={props.onClose}>
           Close
         </button>
-        <button className={classes.button}>Order</button>
+        {hasItems && <button className={classes.button}>Order</button>}
       </div>
     </Modal>
   );
