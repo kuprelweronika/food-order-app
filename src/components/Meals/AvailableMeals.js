@@ -7,11 +7,17 @@ const AvailableMeals = () => {
   //przechwytywanie z bazy danych
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
   useEffect(() => {
     const fetchMeals = async () => {
       const response = await fetch(
         "https://meals-30d67-default-rtdb.europe-west1.firebasedatabase.app/meals.json"
       );
+
+      if (!response.ok) {
+        throw new Error("Sth went wrong!");
+      }
+
       const responseData = await response.json();
       const loadedMeals = [];
       for (const key in responseData) {
@@ -26,12 +32,25 @@ const AvailableMeals = () => {
       setMeals(loadedMeals);
       setIsLoading(false);
     };
-    fetchMeals();
+
+    fetchMeals().catch((error) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    });
   }, []);
   // mapujemy elementy z naszego obiektu, i wkładamy je w element li
   //const mealsList = DUMMY_MEALS.map((meal) => <li>{meal.name}</li>);
   //teraz zamiast listować to to dajemy to do nowego komponentu
   //i podajemy odpowiednie wartosci do tego komponentu
+
+  if (httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
+      </section>
+    );
+  }
+
   const mealsList = meals.map((meal) => (
     <MealItem
       key={meal.id}
