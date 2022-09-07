@@ -1,40 +1,38 @@
 import classes from "./AvailableMeals.module.css";
 import Card from "../UI/Card";
 import MealItem from "./MealItem";
-
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
+import { useEffect, useState } from "react";
 
 const AvailableMeals = () => {
+  //przechwytywanie z bazy danych
+  const [meals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const fetchMeals = async () => {
+      const response = await fetch(
+        "https://meals-30d67-default-rtdb.europe-west1.firebasedatabase.app/meals.json"
+      );
+      const responseData = await response.json();
+      const loadedMeals = [];
+      for (const key in responseData) {
+        loadedMeals.push({
+          id: key,
+          name: responseData[key].name,
+          description: responseData[key].description,
+          price: responseData[key].price,
+        });
+      }
+
+      setMeals(loadedMeals);
+      setIsLoading(false);
+    };
+    fetchMeals();
+  }, []);
   // mapujemy elementy z naszego obiektu, i wkładamy je w element li
   //const mealsList = DUMMY_MEALS.map((meal) => <li>{meal.name}</li>);
   //teraz zamiast listować to to dajemy to do nowego komponentu
   //i podajemy odpowiednie wartosci do tego komponentu
-  const mealsList = DUMMY_MEALS.map((meal) => (
+  const mealsList = meals.map((meal) => (
     <MealItem
       key={meal.id}
       id={meal.id}
@@ -43,10 +41,22 @@ const AvailableMeals = () => {
       price={meal.price}
     />
   ));
+
+  if (!isLoading) {
+    return (
+      <section className={classes.meals}>
+        <Card>
+          <ul>{mealsList}</ul>
+        </Card>
+      </section>
+    );
+  }
   return (
     <section className={classes.meals}>
       <Card>
-        <ul>{mealsList}</ul>
+        <section className={classes.MealsLoading}>
+          <p>Loading..</p>
+        </section>
       </Card>
     </section>
   );
