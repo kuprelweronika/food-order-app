@@ -23,6 +23,19 @@ const Cart = (props) => {
   const cartItemAddHandler = (item) => {
     cartCtx.addItem({ ...item, amount: 1 });
   };
+  const orderHandler = () => {
+    setIsCheckout(true);
+  };
+
+  const submitOrderHandler = (userData) => {
+    fetch(
+      "https://meals-30d67-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
+      {
+        method: "POST",
+        body: JSON.stringify({ user: userData, orderedItems: cartCtx.items }),
+      }
+    );
+  };
 
   const cartItems = (
     <ul className={classes["cart-items"]}>
@@ -40,10 +53,6 @@ const Cart = (props) => {
   );
   //dodajemy .bind(null, item.id) to robi pre-konfiguracje
   //dodalismy dodatkwy CartItem i zamiast tej listy renderujemy ten carditem
-
-  const orderHandler = () => {
-    setIsCheckout(true);
-  };
 
   const modalActions = (
     <div className={classes.actions}>
@@ -65,7 +74,9 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {isCheckout && <Checkout onCancel={props.onClose} />}
+      {isCheckout && (
+        <Checkout onConfirm={submitOrderHandler} onCancel={props.onClose} />
+      )}
       {!isCheckout && modalActions}
     </Modal>
   );
